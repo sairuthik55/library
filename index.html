@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📚 My Smart Library</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- ================= HOME PAGE ================= -->
+  <div class="home" id="home">
+    <div class="home-overlay">
+      <div class="home-container">
+        <h1 class="home-title">📚 My Smart Library</h1>
+        <p class="home-subtitle">Discover, Borrow, and Learn Smarter</p>
+
+        <div class="home-grid">
+          <button class="home-card" onclick="showLogin()">
+            <i class="fas fa-user-shield"></i>
+            <h3>Librarian Login</h3>
+            <p>Access your admin dashboard</p>
+          </button>
+
+          <button class="home-card" onclick="showUser()">
+            <i class="fas fa-users"></i>
+            <h3>User View</h3>
+            <p>Explore books and borrow instantly</p>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= LOGIN PAGE ================= -->
+  <section class="login" id="login">
+    <div class="login-overlay">
+      <div class="login-card">
+        <h2>🔐 Librarian Login</h2>
+        <input type="text" id="email" placeholder="Email" />
+        <input type="password" id="password" placeholder="Password" />
+        <button onclick="login()">Login</button>
+        <div class="back-btn" onclick="goHome()">⬅ Back</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DASHBOARD ================= -->
+  <section id="dashboard" class="dashboard">
+    <div class="dashboard-container">
+      <h2>📘 Librarian Dashboard</h2>
+
+      <div class="dashboard-grid">
+        <button class="dashboard-card" onclick="openBookList()">
+          <h3>📚 View Books</h3>
+          <p>See all available books</p>
+        </button>
+
+        <button class="dashboard-card" onclick="showAddBookForm()">
+          <h3>➕ Add Book</h3>
+          <p>Add new books with details</p>
+        </button>
+       
+        <button class="dashboard-card borrow" onclick="openBorrowedBooks()">
+  <h3>📖 Borrowed Books</h3>
+  <p>Manage returns and fines</p>
+</button>
+
+        <button class="dashboard-card borrow" onclick="openBorrowRequests()">
+          <h3>📩 Borrow Requests <span id="requestCount" class="request-count">0</span></h3>
+          <p>Approve or deny borrow requests</p>
+        </button>
+
+        <button class="dashboard-card logout" onclick="logout()">
+          <h3>🚪 Logout</h3>
+          <p>Exit dashboard</p>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ADD BOOK MODAL ================= -->
+  <div id="addBookModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeAddBookForm()">&times;</span>
+      <h2>➕ Add New Book</h2>
+      <form id="addBookForm">
+        <label>Title:</label>
+        <input type="text" id="bookTitle" required>
+
+        <label>Author:</label>
+        <input type="text" id="bookAuthor" required>
+
+        <label>Category:</label>
+        <input type="text" id="bookCategory" required>
+        
+        <label>Book Cover URL (Optional):</label>
+        <input type="url" id="bookImageUrl" placeholder="Paste image URL (optional)">
+
+        <button type="submit">Add Book</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN BOOKS LIST ================= -->
+  <section class="admin-books" id="adminBooks">
+    <div class="admin-books-overlay">
+      <div class="admin-books-card">
+        <h2>📚 All Books</h2>
+        <div class="book-list" id="adminBookList"></div>
+        <div class="back-btn" onclick="backToDashboard()">⬅ Back</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= USER PAGE ================= -->
+  <div class="user-page" id="userPage">
+    <div class="user-bg-overlay">
+      <div class="user-container">
+        <header class="user-header">
+          <h1>📖 Explore Our Library</h1>
+          <div id="reminderBanner" style="display:none;" class="reminder-banner">
+            ⚠️ Some of your borrowed books are due soon! Check your list.
+          </div>
+          <div class="user-filters">
+            <input type="text" id="searchInput" placeholder="🔍 Search by title or author..." oninput="searchBooks()">
+            <select id="filterCategory" onchange="filterByCategory()">
+              <option value="all">All Categories</option>
+            </select>
+          </div>
+        </header>
+
+        <div id="userBookList" class="book-grid"></div>
+
+        <button class="back-btn" onclick="goHome()">⬅ Back to Home</button>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- ================= BOOK DETAILS MODAL ================= -->
+  <div id="bookModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <img id="modalBookImg" src="" alt="Book Image" class="modal-img">
+      <h3 id="modalBookTitle"></h3>
+      <p id="modalBookAuthor"></p>
+      <p id="modalBookCategory"></p>
+       
+      <div class="borrow-user-box">
+  <input
+    type="text"
+    id="borrowUserName"
+    placeholder="Enter Your Name"
+  />
+
+  <input
+    type="tel"
+    id="borrowPhone"
+    placeholder="Enter Phone Number"
+  />
+</div>
+
+      <button id="borrowBtn" class="borrow-btn" onclick="borrowBook()">📚 Borrow Book</button>
+      <button id="favBtn" class="borrow-btn" onclick="toggleFavorite()">❤️ Add to Favorites</button>
+
+      <!-- Rating and Review -->
+      <div id="ratingSection">
+        <h4>⭐ Rate this Book</h4>
+        <select id="ratingValue">
+          <option value="">Select Rating</option>
+          <option>1 ⭐</option>
+          <option>2 ⭐⭐</option>
+          <option>3 ⭐⭐⭐</option>
+          <option>4 ⭐⭐⭐⭐</option>
+          <option>5 ⭐⭐⭐⭐⭐</option>
+        </select>
+        <textarea id="reviewText" placeholder="Write a short review..." rows="2"></textarea>
+        <button id="saveReviewBtn" onclick="saveReview()">💾 Save Review</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= BORROW REQUESTS ================= -->
+  <section id="borrowRequests" class="borrow-requests">
+    <div class="borrow-container">
+      <h2>📬 Borrow Requests</h2>
+      <div id="requestList" class="borrow-list"></div>
+      <button class="back-btn" onclick="backToDashboard()">⬅ Back to Dashboard</button>
+    </div>
+  </section>
+<!-- ================= BORROWED BOOKS ================= -->
+<section id="borrowedBooksPage" class="borrow-requests">
+  <div class="borrow-container">
+    <h2>📚 Borrowed Books</h2>
+    <input
+  type="text"
+  id="borrowedSearch"
+  placeholder="🔍 Search by book, user, or phone..."
+  oninput="searchBorrowedBooks()"
+  class="borrow-search"
+/>
+
+    <div id="borrowedBooksList" class="borrow-list"></div>
+
+    <button class="back-btn" onclick="backToDashboard()">
+      ⬅ Back to Dashboard
+    </button>
+  </div>
+</section>
+  <!-- ================= INTRO VIDEO ================= -->
+  <div class="intro" id="intro">
+    <video id="introVideo" autoplay muted playsinline>
+      <source src="intro.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
